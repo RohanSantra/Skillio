@@ -1,0 +1,612 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+/* =========================================================
+   SKILLIO — ORGANIC INTELLIGENCE DESIGN SYSTEM
+========================================================= */
+
+@theme {
+    /* -----------------------------------------------------
+       SURFACES
+    ----------------------------------------------------- */
+
+    --surface: #f9faf3;
+    --surface-dim: #d9dbd4;
+    --surface-bright: #f9faf3;
+
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f3f4ed;
+    --surface-container: #edefe8;
+    --surface-container-high: #e7e9e2;
+    --surface-container-highest: #e1e3dc;
+
+    --surface-variant: #e1e3dc;
+
+    /* -----------------------------------------------------
+       TEXT / SURFACE CONTENT
+    ----------------------------------------------------- */
+
+    --on-surface: #191c18;
+    --on-surface-variant: #444841;
+
+    /* Legacy aliases retained for feature modules that use the original
+       semantic names. They resolve to the active design-system tokens. */
+    --text-primary: var(--on-surface);
+    --text-secondary: var(--on-surface-variant);
+    --border-color: var(--outline-variant);
+    --surface-hover: var(--surface-container-high);
+
+    --inverse-surface: #2e312d;
+    --inverse-on-surface: #f0f1ea;
+
+    /* -----------------------------------------------------
+       PRIMARY — SAGE
+    ----------------------------------------------------- */
+
+    --primary: #3e4a37;
+    --on-primary: #ffffff;
+
+    --primary-container: #55624d;
+    --on-primary-container: #ceddc2;
+
+    --inverse-primary: #bdcbb1;
+
+    --primary-fixed: #d9e7cc;
+    --primary-fixed-dim: #bdcbb1;
+    --on-primary-fixed: #131e0e;
+    --on-primary-fixed-variant: #3e4a37;
+
+    /* -----------------------------------------------------
+       SECONDARY — BLUSH
+    ----------------------------------------------------- */
+
+    --secondary: #745754;
+    --on-secondary: #ffffff;
+
+    --secondary-container: #fed7d2;
+    --on-secondary-container: #795c58;
+
+    --secondary-fixed: #ffdad5;
+    --secondary-fixed-dim: #e3beb9;
+    --on-secondary-fixed: #2b1614;
+    --on-secondary-fixed-variant: #5b403d;
+
+    /* -----------------------------------------------------
+       TERTIARY
+    ----------------------------------------------------- */
+
+    --tertiary: #5b403d;
+    --on-tertiary: #ffffff;
+
+    --tertiary-container: #755754;
+    --on-tertiary-container: #f7cfcb;
+
+    --tertiary-fixed: #ffdad6;
+    --tertiary-fixed-dim: #e4beba;
+    --on-tertiary-fixed: #2b1614;
+    --on-tertiary-fixed-variant: #5b403d;
+
+    /* -----------------------------------------------------
+       ERROR
+    ----------------------------------------------------- */
+
+    --error: #ba1a1a;
+    --on-error: #ffffff;
+
+    --error-container: #ffdad6;
+    --on-error-container: #93000a;
+
+    /* -----------------------------------------------------
+       BORDERS
+    ----------------------------------------------------- */
+
+    --outline: #757870;
+    --outline-variant: #c5c8be;
+
+    --surface-tint: #55624d;
+
+    /* -----------------------------------------------------
+       BACKGROUND
+    ----------------------------------------------------- */
+
+    --background: #f9faf3;
+    --on-background: #191c18;
+
+    /* -----------------------------------------------------
+       TYPOGRAPHY
+    ----------------------------------------------------- */
+
+    --font-heading: "Manrope", sans-serif;
+    --font-body: "Plus Jakarta Sans", sans-serif;
+
+    /* -----------------------------------------------------
+       RADIUS
+    ----------------------------------------------------- */
+
+    --radius-sm: 0.25rem;
+    --radius: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* -----------------------------------------------------
+       SPACING
+    ----------------------------------------------------- */
+
+    --space-xs: 4px;
+    --space-base: 8px;
+    --space-sm: 12px;
+    --space-md: 24px;
+    --space-lg: 48px;
+    --space-xl: 80px;
+
+    --gutter: 24px;
+    --margin-mobile: 16px;
+    --margin-desktop: 40px;
+
+    /* -----------------------------------------------------
+       SHADOWS
+    ----------------------------------------------------- */
+
+    --shadow-sm:
+        0 2px 8px rgba(85, 98, 77, 0.05);
+
+    --shadow-md:
+        0 4px 20px rgba(85, 98, 77, 0.06);
+
+    --shadow-lg:
+        0 8px 32px rgba(85, 98, 77, 0.12);
+
+    /* -----------------------------------------------------
+       TRANSITIONS
+    ----------------------------------------------------- */
+
+    --transition-fast: 200ms ease;
+    --transition-base: 400ms ease;
+}
+
+
+/* =========================================================
+   BASE
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--background);
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+
+    background: var(--background);
+    color: var(--on-background);
+
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+.text-display-lg {
+    font-family: var(--font-heading);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 56px;
+    letter-spacing: -0.02em;
+}
+
+.text-headline-lg {
+    font-family: var(--font-heading);
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 40px;
+    letter-spacing: -0.01em;
+}
+
+.text-headline-lg-mobile {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 36px;
+}
+
+.text-headline-md {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+}
+
+.text-body-lg {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28px;
+}
+
+.text-body-md {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.text-label-md {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+}
+
+.text-label-sm {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+
+/* =========================================================
+   REUSABLE GLASS SURFACE
+========================================================= */
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.4);
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    box-shadow: var(--shadow-lg);
+}
+
+
+/* =========================================================
+   FORM ELEMENTS
+========================================================= */
+
+.skillio-input {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 16px;
+
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius);
+
+    background: var(--surface-container-low);
+
+    color: var(--on-surface);
+
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 24px;
+
+    outline: none;
+
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background-color var(--transition-fast);
+}
+
+.skillio-input::placeholder {
+    color: color-mix(in srgb,
+            var(--on-surface-variant) 50%,
+            transparent);
+}
+
+.skillio-input:hover:not(:disabled) {
+    border-color: var(--outline);
+}
+
+.skillio-input:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 1px var(--primary);
+}
+
+.skillio-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.skillio-primary-button {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: var(--radius-lg);
+
+    background: var(--primary);
+    color: var(--on-primary);
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+
+    box-shadow:
+        0 4px 12px rgba(85, 98, 77, 0.15);
+
+    transition:
+        background-color var(--transition-base),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.skillio-primary-button:hover:not(:disabled) {
+    background: var(--primary-container);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 18px rgba(85, 98, 77, 0.2);
+}
+
+.skillio-primary-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.skillio-primary-button:disabled {
+    opacity: 0.65;
+}
+
+
+/* =========================================================
+   SECONDARY / GOOGLE BUTTON
+========================================================= */
+
+.skillio-secondary-button {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 12px 20px;
+
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-lg);
+
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+
+    transition:
+        background-color var(--transition-base),
+        border-color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.skillio-secondary-button:hover:not(:disabled) {
+    background: var(--surface-container-low);
+
+    border-color: var(--outline);
+
+    transform: translateY(-1px);
+}
+
+.skillio-secondary-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.skillio-error {
+    padding: 12px 16px;
+
+    border-radius: var(--radius-md);
+
+    background: var(--error-container);
+    color: var(--on-error-container);
+
+    font-size: 14px;
+    line-height: 20px;
+}
+
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+::selection {
+    background: var(--primary-fixed);
+    color: var(--on-primary-fixed);
+}
+
+
+
+
+@layer components {
+    .form-input {
+        width: 100%;
+        height: 48px;
+
+        border: 1px solid var(--outline-variant);
+        border-radius: 0.75rem;
+
+        background: var(--surface-container-lowest);
+
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+        color: var(--on-surface);
+
+        outline: none;
+
+        transition:
+            border-color 200ms ease,
+            box-shadow 200ms ease,
+            background-color 200ms ease;
+    }
+
+    .form-input:hover {
+        border-color: var(--outline);
+    }
+
+    .form-input:focus {
+        border-color: var(--primary);
+
+        box-shadow:
+            0 0 0 3px color-mix(in srgb,
+                var(--primary-fixed) 75%,
+                transparent);
+    }
+}
+
+
+/* =========================================================
+   GOOGLE AUTH
+========================================================= */
+
+.google-auth-wrapper {
+    width: 100%;
+}
+
+.google-button-container {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-lg);
+
+    overflow: hidden;
+
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.google-button-container:hover {
+    transform: translateY(-1px);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.google-button-container.google-loading {
+    opacity: 0.6;
+
+    pointer-events: none;
+}
+
+.google-loading-text {
+    margin-top: 10px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: var(--on-surface-variant);
+}
+
+
+/* --------------------------------
+   SCROLLBAR
+-------------------------------- */
+
+.scroll-thumb-only::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroll-thumb-only::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-thumb-only::-webkit-scrollbar-thumb {
+  background-color: currentColor;
+  opacity: 0.28;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scroll-thumb-only:hover::-webkit-scrollbar-thumb {
+  opacity: 0.6;
+}
