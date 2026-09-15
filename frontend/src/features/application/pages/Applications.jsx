@@ -4,7 +4,6 @@ import {
     CircleAlert,
     Clock3,
     Filter,
-    LoaderCircle,
     Plus,
     Search,
     Sparkles,
@@ -17,12 +16,14 @@ import {
     useMemo,
     useState,
 } from "react";
+
 import { toast } from "sonner";
 
 import useApplication
     from "../hooks/useApplication.js";
 
-import useJobWorkspace from "../../job-workspace/hooks/useJobWorkspace.js"
+import useJobWorkspace
+    from "../../job-workspace/hooks/useJobWorkspace.js";
 
 import ApplicationCard
     from "../components/ApplicationCard";
@@ -35,6 +36,7 @@ import ApplicationEmptyState
 
 import ApplicationModal
     from "../components/ApplicationModal";
+
 import ErrorToast
     from "../../../components/feedback/ErrorToast.jsx";
 
@@ -42,7 +44,7 @@ import ErrorToast
 const STATUS_FILTERS = [
     {
         value: "all",
-        label: "All applications",
+        label: "All",
     },
     {
         value: "saved",
@@ -69,82 +71,64 @@ const STATUS_FILTERS = [
 
 const Applications = () => {
 
-    // =============================================
+    // =========================================================
     // APPLICATION
-    // =============================================
+    // =========================================================
 
     const {
         applications,
-
         isLoading,
-
         isCreating,
-
         isUpdating,
-
         isDeleting,
-
         error,
-
         getAllApplications,
-
         createApplication,
-
         updateApplication,
-
         deleteApplication,
-
         clearError,
     } = useApplication();
 
 
-    // =============================================
+    // =========================================================
     // JOB WORKSPACE
-    // =============================================
+    // =========================================================
 
     const {
         jobWorkspaces,
-
-        isLoading:
-            isLoadingWorkspaces,
-
+        isLoading: isLoadingWorkspaces,
         getAllJobWorkspaces,
     } = useJobWorkspace();
 
 
-    // =============================================
+    // =========================================================
     // LOCAL STATE
-    // =============================================
+    // =========================================================
 
     const [
         search,
         setSearch,
     ] = useState("");
 
-
     const [
         statusFilter,
         setStatusFilter,
     ] = useState("all");
-
 
     const [
         showCreateModal,
         setShowCreateModal,
     ] = useState(false);
 
-
     const [
         showDetailsModal,
         setShowDetailsModal,
     ] = useState(false);
 
-
     const [
         showEditModal,
         setShowEditModal,
     ] = useState(false);
-
 
     const [
         selectedApplication,
@@ -157,17 +141,17 @@ const Applications = () => {
     ] = useState(null);
 
 
-    // =============================================
+    // =========================================================
     // LOAD DATA
-    // =============================================
+    // =========================================================
 
     useEffect(() => {
 
         getAllApplications()
-            .catch(() => {});
+            .catch(() => { });
 
         getAllJobWorkspaces()
-            .catch(() => {});
+            .catch(() => { });
 
     }, [
         getAllApplications,
@@ -175,281 +159,286 @@ const Applications = () => {
     ]);
 
 
-    // =============================================
+    // =========================================================
     // WORKSPACE MAP
-    // =============================================
+    // =========================================================
 
-    const workspaceMap =
-        useMemo(() => {
+    const workspaceMap = useMemo(() => {
 
-            const map =
-                new Map();
+        const map = new Map();
 
-            jobWorkspaces.forEach(
-                (workspace) => {
+        jobWorkspaces.forEach((workspace) => {
 
-                    map.set(
-                        workspace._id,
-                        workspace
-                    );
-
-                }
+            map.set(
+                workspace._id,
+                workspace
             );
 
-            return map;
+        });
 
-        }, [
-            jobWorkspaces,
-        ]);
+        return map;
+
+    }, [
+        jobWorkspaces,
+    ]);
 
 
-    // =============================================
+    // =========================================================
     // FILTERED APPLICATIONS
-    // =============================================
+    // =========================================================
 
-    const filteredApplications =
-        useMemo(() => {
+    const filteredApplications = useMemo(() => {
 
-            const query =
-                search
-                    .trim()
-                    .toLowerCase();
+        const query =
+            search
+                .trim()
+                .toLowerCase();
 
+        return applications.filter(
+            (application) => {
 
-            return applications.filter(
-                (application) => {
-
-                    const workspace =
-                        workspaceMap.get(
-                            application.jobId
-                        );
-
-
-                    const role =
-                        workspace?.role ||
-                        workspace?.jobTitle ||
-                        workspace?.title ||
-                        "";
-
-
-                    const company =
-                        workspace?.company ||
-                        workspace?.companyName ||
-                        "";
-
-
-                    const notes =
-                        application.notes ||
-                        "";
-
-
-                    const matchesSearch =
-                        !query ||
-                        role
-                            .toLowerCase()
-                            .includes(query) ||
-                        company
-                            .toLowerCase()
-                            .includes(query) ||
-                        notes
-                            .toLowerCase()
-                            .includes(query);
-
-
-                    const matchesStatus =
-                        statusFilter === "all" ||
-                        application.status ===
-                            statusFilter;
-
-
-                    return (
-                        matchesSearch &&
-                        matchesStatus
+                const workspace =
+                    workspaceMap.get(
+                        application.jobId
                     );
 
-                }
+                const role =
+                    workspace?.role ||
+                    workspace?.jobTitle ||
+                    workspace?.title ||
+                    "";
+
+                const company =
+                    workspace?.company ||
+                    workspace?.companyName ||
+                    "";
+
+                const notes =
+                    application.notes ||
+                    "";
+
+                const matchesSearch =
+                    !query ||
+                    role
+                        .toLowerCase()
+                        .includes(query) ||
+                    company
+                        .toLowerCase()
+                        .includes(query) ||
+                    notes
+                        .toLowerCase()
+                        .includes(query);
+
+                const matchesStatus =
+                    statusFilter === "all" ||
+                    application.status ===
+                    statusFilter;
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+    }, [
+        applications,
+        workspaceMap,
+        search,
+        statusFilter,
+    ]);
+
+
+    // =========================================================
+    // STATS
+    // =========================================================
+
+    const stats = useMemo(() => {
+
+        return {
+
+            total:
+                applications.length,
+
+            applied:
+                applications.filter(
+                    (item) =>
+                        item.status === "applied"
+                ).length,
+
+            interviews:
+                applications.filter(
+                    (item) =>
+                        item.status === "interview"
+                ).length,
+
+            offers:
+                applications.filter(
+                    (item) =>
+                        item.status === "offer"
+                ).length,
+
+        };
+
+    }, [
+        applications,
+    ]);
+
+
+    // =========================================================
+    // CREATE
+    // =========================================================
+
+    const handleCreate = async (data) => {
+
+        try {
+
+            await createApplication(data);
+
+            toast.success(
+                "Application created successfully."
             );
 
-        }, [
-            applications,
-            workspaceMap,
-            search,
-            statusFilter,
-        ]);
+            setShowCreateModal(false);
+
+        } catch (error) {
+
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Unable to create application."
+            );
+
+        }
+
+    };
 
 
-    // =============================================
-    // STATS
-    // =============================================
-
-    const stats =
-        useMemo(() => {
-
-            return {
-
-                total:
-                    applications.length,
-
-                applied:
-                    applications.filter(
-                        (item) =>
-                            item.status ===
-                            "applied"
-                    ).length,
-
-                interviews:
-                    applications.filter(
-                        (item) =>
-                            item.status ===
-                            "interview"
-                    ).length,
-
-                offers:
-                    applications.filter(
-                        (item) =>
-                            item.status ===
-                            "offer"
-                    ).length,
-
-            };
-
-        }, [
-            applications,
-        ]);
-
-
-    // =============================================
-    // CREATE
-    // =============================================
-
-    const handleCreate =
-        async (data) => {
-
-            try {
-                await createApplication(data);
-                toast.success("Application created successfully.");
-                setShowCreateModal(false);
-            } catch (error) {
-                toast.error(
-                    error?.response?.data?.message ||
-                    error?.message ||
-                    "Unable to create application."
-                );
-            }
-
-        };
-
-
-    // =============================================
+    // =========================================================
     // UPDATE
-    // =============================================
+    // =========================================================
 
-    const handleUpdate =
-        async (data) => {
+    const handleUpdate = async (data) => {
 
-            if (
-                !selectedApplication
-            ) {
-                return;
-            }
+        if (!selectedApplication) {
+            return;
+        }
+
+        try {
+
+            await updateApplication(
+                selectedApplication._id,
+                data
+            );
+
+            toast.success(
+                "Application updated successfully."
+            );
+
+            setShowEditModal(false);
+            setShowDetailsModal(false);
+
+        } catch (error) {
+
+            toast.error(
+                error?.response?.data?.message ||
+                error?.message ||
+                "Unable to update application."
+            );
+
+        }
+
+    };
 
 
-            try {
-                await updateApplication(
-                    selectedApplication._id,
-                    data
-                );
-
-                toast.success("Application updated successfully.");
-                setShowEditModal(false);
-                setShowDetailsModal(false);
-            } catch (error) {
-                toast.error(
-                    error?.response?.data?.message ||
-                    error?.message ||
-                    "Unable to update application."
-                );
-            }
-
-        };
-
-
-    // =============================================
+    // =========================================================
     // DELETE
-    // =============================================
+    // =========================================================
 
-    const handleDelete =
-        async (application) => {
+    const handleDelete = (application) => {
 
-            if (!application) {
-                return;
-            }
+        if (!application) {
+            return;
+        }
 
+        setApplicationToDelete(
+            application
+        );
 
-            setApplicationToDelete(application);
+    };
 
-        };
 
     const handleConfirmDelete = async () => {
+
         if (!applicationToDelete?._id) {
             return;
         }
 
         try {
-            await deleteApplication(applicationToDelete._id);
-            toast.success("Application deleted successfully.");
+
+            await deleteApplication(
+                applicationToDelete._id
+            );
+
+            toast.success(
+                "Application deleted successfully."
+            );
+
             setApplicationToDelete(null);
             setShowDetailsModal(false);
             setSelectedApplication(null);
+
         } catch (error) {
+
             toast.error(
                 error?.response?.data?.message ||
                 error?.message ||
                 "Unable to delete application."
             );
+
         }
+
     };
 
 
-    // =============================================
-    // OPEN DETAILS
-    // =============================================
+    // =========================================================
+    // VIEW
+    // =========================================================
 
-    const handleView =
-        (application) => {
+    const handleView = (application) => {
 
-            setSelectedApplication(
-                application
-            );
+        setSelectedApplication(
+            application
+        );
 
-            setShowDetailsModal(
-                true
-            );
+        setShowDetailsModal(
+            true
+        );
 
-        };
-
-
-    // =============================================
-    // OPEN EDIT
-    // =============================================
-
-    const handleEdit =
-        () => {
-
-            setShowDetailsModal(
-                false
-            );
-
-            setShowEditModal(
-                true
-            );
-
-        };
+    };
 
 
-    // =============================================
+    // =========================================================
+    // EDIT
+    // =========================================================
+
+    const handleEdit = () => {
+
+        setShowDetailsModal(
+            false
+        );
+
+        setShowEditModal(
+            true
+        );
+
+    };
+
+
+    // =========================================================
     // LOADING
-    // =============================================
+    // =========================================================
 
     if (
         isLoading &&
@@ -460,37 +449,45 @@ const Applications = () => {
 
             <div
                 className="
-                    min-h-screen
+                    min-h-full
+                    w-full
                     bg-[var(--background)]
-                    px-4
-                    py-6
-                    sm:px-6
-                    lg:px-8
+                    px-3
+                    py-4
+                    sm:px-5
+                    sm:py-6
+                    lg:px-7
+                    xl:px-8
                 "
             >
 
                 <div
                     className="
                         mx-auto
-                        max-w-7xl
-                        space-y-6
+                        w-full
+                        max-w-[1500px]
+                        space-y-5
+                        sm:space-y-6
                     "
                 >
 
                     <div
                         className="
-                            h-56
+                            h-64
                             animate-pulse
-                            rounded-[2rem]
+                            rounded-[1.5rem]
                             bg-[var(--surface-container-high)]
+                            sm:h-72
+                            lg:h-64
                         "
                     />
 
                     <div
                         className="
                             grid
-                            gap-4
-                            sm:grid-cols-2
+                            grid-cols-2
+                            gap-3
+                            sm:gap-4
                             lg:grid-cols-4
                         "
                     >
@@ -513,6 +510,15 @@ const Applications = () => {
 
                     </div>
 
+                    <div
+                        className="
+                            h-24
+                            animate-pulse
+                            rounded-2xl
+                            bg-[var(--surface-container-high)]
+                        "
+                    />
+
                 </div>
 
             </div>
@@ -522,61 +528,70 @@ const Applications = () => {
     }
 
 
-    // =============================================
+    // =========================================================
     // PAGE
-    // =============================================
+    // =========================================================
 
     return (
 
         <div
             className="
-                min-h-screen
+                min-h-full
+                w-full
                 bg-[var(--background)]
-                px-4
-                py-6
-                sm:px-6
-                lg:px-8
+                px-3
+                py-4
+                sm:px-5
+                sm:py-6
+                lg:px-7
+                xl:px-8
             "
         >
 
             <div
                 className="
                     mx-auto
-                    max-w-7xl
+                    w-full
+                    max-w-[1500px]
                 "
             >
 
-                {/* =================================
+                {/* =====================================================
                     HERO
-                ================================= */}
+                ====================================================== */}
 
                 <section
                     className="
                         relative
                         overflow-hidden
-                        rounded-[2rem]
+                        rounded-[1.5rem]
                         bg-[var(--primary)]
-                        px-6
-                        py-8
+                        px-5
+                        py-6
                         shadow-[var(--shadow-md)]
+                        sm:rounded-[2rem]
                         sm:px-8
-                        sm:py-10
+                        sm:py-8
+                        lg:px-10
+                        lg:py-9
                     "
                 >
 
-                    {/* Decorative */}
+                    {/* Decorative circles */}
 
                     <div
                         className="
                             pointer-events-none
                             absolute
-                            -right-16
+                            -right-20
                             -top-24
                             h-64
                             w-64
                             rounded-full
                             bg-white/10
                             blur-2xl
+                            sm:h-80
+                            sm:w-80
                         "
                     />
 
@@ -584,13 +599,31 @@ const Applications = () => {
                         className="
                             pointer-events-none
                             absolute
-                            -bottom-32
-                            right-20
-                            h-72
-                            w-72
+                            -bottom-40
+                            right-10
+                            hidden
+                            h-80
+                            w-80
                             rounded-full
                             bg-white/5
                             blur-3xl
+                            sm:block
+                        "
+                    />
+
+                    <div
+                        className="
+                            pointer-events-none
+                            absolute
+                            bottom-0
+                            left-1/2
+                            h-40
+                            w-40
+                            -translate-x-1/2
+                            rounded-full
+                            bg-white/5
+                            blur-3xl
+                            lg:left-[55%]
                         "
                     />
 
@@ -600,15 +633,18 @@ const Applications = () => {
                             relative
                             flex
                             flex-col
-                            justify-between
                             gap-7
                             lg:flex-row
                             lg:items-end
+                            lg:justify-between
                         "
                     >
 
+                        {/* HERO CONTENT */}
+
                         <div
                             className="
+                                min-w-0
                                 max-w-2xl
                             "
                         >
@@ -622,9 +658,11 @@ const Applications = () => {
                                     bg-white/10
                                     px-3
                                     py-1.5
-                                    text-xs
+                                    text-[11px]
                                     font-bold
+                                    tracking-wide
                                     text-white
+                                    sm:text-xs
                                 "
                             >
 
@@ -640,11 +678,14 @@ const Applications = () => {
                             <h1
                                 className="
                                     mt-4
-                                    text-3xl
+                                    max-w-xl
+                                    text-2xl
                                     font-extrabold
+                                    leading-tight
                                     tracking-tight
                                     text-white
                                     sm:text-4xl
+                                    lg:text-[2.6rem]
                                 "
                             >
                                 Keep every opportunity
@@ -671,6 +712,8 @@ const Applications = () => {
                         </div>
 
 
+                        {/* HERO BUTTON */}
+
                         <button
                             type="button"
                             onClick={() => {
@@ -685,6 +728,7 @@ const Applications = () => {
                             className="
                                 inline-flex
                                 min-h-12
+                                w-full
                                 shrink-0
                                 items-center
                                 justify-center
@@ -698,6 +742,9 @@ const Applications = () => {
                                 shadow-sm
                                 transition
                                 hover:-translate-y-0.5
+                                hover:shadow-md
+                                active:translate-y-0
+                                sm:w-auto
                             "
                         >
 
@@ -714,82 +761,74 @@ const Applications = () => {
                 </section>
 
 
-                {/* =================================
+                {/* =====================================================
                     STATS
-                ================================= */}
+                ====================================================== */}
 
                 <section
                     className="
-                        mt-6
+                        mt-4
                         grid
-                        gap-4
-                        sm:grid-cols-2
+                        grid-cols-2
+                        gap-3
+                        sm:mt-6
+                        sm:gap-4
                         lg:grid-cols-4
                     "
                 >
 
                     <StatCard
                         label="Total applications"
-                        value={
-                            stats.total
-                        }
-                        icon={
-                            BriefcaseBusiness
-                        }
+                        value={stats.total}
+                        icon={BriefcaseBusiness}
                     />
 
                     <StatCard
                         label="Applied"
-                        value={
-                            stats.applied
-                        }
-                        icon={
-                            CheckCircle2
-                        }
+                        value={stats.applied}
+                        icon={CheckCircle2}
                     />
 
                     <StatCard
                         label="Interviews"
-                        value={
-                            stats.interviews
-                        }
-                        icon={
-                            Clock3
-                        }
+                        value={stats.interviews}
+                        icon={Clock3}
                     />
 
                     <StatCard
                         label="Offers"
-                        value={
-                            stats.offers
-                        }
-                        icon={
-                            Target
-                        }
+                        value={stats.offers}
+                        icon={Target}
                     />
 
                 </section>
 
 
-                {/* =================================
+                {/* =====================================================
                     ERROR
-                ================================= */}
+                ====================================================== */}
 
-                <ErrorToast error={error} />
+                <ErrorToast
+                    error={error}
+                />
 
 
-                {/* =================================
+                {/* =====================================================
                     TOOLBAR
-                ================================= */}
+                ====================================================== */}
 
                 <section
                     className="
-                        mt-8
-                        rounded-[1.5rem]
+                        mt-6
+                        rounded-2xl
                         border
                         border-[var(--outline-variant)]
                         bg-[var(--surface-container-lowest)]
-                        p-4
+                        p-3
+                        shadow-sm
+                        sm:mt-8
+                        sm:rounded-[1.5rem]
+                        sm:p-4
                     "
                 >
 
@@ -798,9 +837,6 @@ const Applications = () => {
                             flex
                             flex-col
                             gap-4
-                            lg:flex-row
-                            lg:items-center
-                            lg:justify-between
                         "
                     >
 
@@ -810,7 +846,6 @@ const Applications = () => {
                             className="
                                 relative
                                 w-full
-                                lg:max-w-md
                             "
                         >
 
@@ -827,15 +862,15 @@ const Applications = () => {
                             />
 
                             <input
-                                value={
-                                    search
-                                }
+                                value={search}
                                 onChange={(event) =>
                                     setSearch(
                                         event.target.value
                                     )
                                 }
-                                placeholder="Search by role, company or notes..."
+                                placeholder="
+                                    Search by role, company or notes...
+                                "
                                 className="
                                     h-12
                                     w-full
@@ -844,11 +879,12 @@ const Applications = () => {
                                     border-[var(--outline-variant)]
                                     bg-[var(--surface-container-low)]
                                     pl-11
-                                    pr-4
+                                    pr-11
                                     text-sm
                                     text-[var(--on-surface)]
                                     outline-none
                                     transition
+                                    placeholder:text-[var(--on-surface-variant)]
                                     focus:border-[var(--primary)]
                                     focus:bg-white
                                     focus:ring-4
@@ -856,71 +892,129 @@ const Applications = () => {
                                 "
                             />
 
+                            {search && (
+
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setSearch("")
+                                    }
+                                    className="
+                                        absolute
+                                        right-3
+                                        top-1/2
+                                        flex
+                                        h-8
+                                        w-8
+                                        -translate-y-1/2
+                                        items-center
+                                        justify-center
+                                        rounded-lg
+                                        text-[var(--on-surface-variant)]
+                                        transition
+                                        hover:bg-[var(--surface-container-high)]
+                                    "
+                                    aria-label="Clear search"
+                                >
+
+                                    <X
+                                        size={16}
+                                    />
+
+                                </button>
+
+                            )}
+
                         </div>
 
 
-                        {/* FILTER */}
+                        {/* FILTERS */}
 
                         <div
                             className="
                                 flex
+                                min-w-0
                                 items-center
                                 gap-2
-                                overflow-x-auto
-                                pb-1
                             "
                         >
 
-                            <Filter
-                                size={17}
+                            <div
                                 className="
+                                    flex
+                                    h-10
                                     shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    bg-[var(--surface-container-low)]
+                                    px-3
                                     text-[var(--on-surface-variant)]
                                 "
-                            />
+                            >
 
-                            {STATUS_FILTERS.map(
-                                (filter) => (
+                                <Filter
+                                    size={16}
+                                />
 
-                                    <button
-                                        key={
-                                            filter.value
-                                        }
-                                        type="button"
-                                        onClick={() =>
-                                            setStatusFilter(
+                            </div>
+
+
+                            <div
+                                className="
+                                    flex
+                                    min-w-0
+                                    flex-1
+                                    gap-2
+                                    overflow-x-auto
+                                    pb-1
+                                    scrollbar-thin
+                                "
+                            >
+
+                                {STATUS_FILTERS.map(
+                                    (filter) => (
+
+                                        <button
+                                            key={
                                                 filter.value
-                                            )
-                                        }
-                                        className={`
-                                            whitespace-nowrap
-                                            rounded-xl
-                                            px-3.5
-                                            py-2.5
-                                            text-xs
-                                            font-bold
-                                            transition
-                                            ${
-                                                statusFilter ===
-                                                filter.value
-                                                    ? `
-                                                        bg-[var(--primary)]
-                                                        text-white
-                                                    `
-                                                    : `
-                                                        text-[var(--on-surface-variant)]
-                                                        hover:bg-[var(--surface-container-low)]
-                                                    `
                                             }
-                                        `}
-                                    >
-                                        {
-                                            filter.label
-                                        }
-                                    </button>
+                                            type="button"
+                                            onClick={() =>
+                                                setStatusFilter(
+                                                    filter.value
+                                                )
+                                            }
+                                            className={`
+                                                shrink-0
+                                                whitespace-nowrap
+                                                rounded-xl
+                                                px-3.5
+                                                py-2.5
+                                                text-xs
+                                                font-bold
+                                                transition
+                                                ${statusFilter ===
+                                                    filter.value
+                                                    ? `
+                                                            bg-[var(--primary)]
+                                                            text-white
+                                                            shadow-sm
+                                                        `
+                                                    : `
+                                                            text-[var(--on-surface-variant)]
+                                                            hover:bg-[var(--surface-container-low)]
+                                                        `
+                                                }
+                                            `}
+                                        >
+                                            {filter.label}
+                                        </button>
 
-                                )
-                            )}
+                                    )
+                                )}
+
+                            </div>
 
                         </div>
 
@@ -929,23 +1023,28 @@ const Applications = () => {
                 </section>
 
 
-                {/* =================================
-                    APPLICATIONS
-                ================================= */}
+                {/* =====================================================
+                    APPLICATION SECTION
+                ====================================================== */}
 
                 <section
                     className="
-                        mt-6
+                        mt-7
+                        sm:mt-8
                     "
                 >
+
+                    {/* SECTION HEADER */}
 
                     <div
                         className="
                             mb-4
                             flex
-                            items-center
-                            justify-between
-                            gap-4
+                            flex-col
+                            gap-2
+                            sm:flex-row
+                            sm:items-end
+                            sm:justify-between
                         "
                     >
 
@@ -953,9 +1052,10 @@ const Applications = () => {
 
                             <h2
                                 className="
-                                    text-xl
+                                    text-lg
                                     font-extrabold
                                     text-[var(--on-surface)]
+                                    sm:text-xl
                                 "
                             >
                                 Your applications
@@ -964,27 +1064,70 @@ const Applications = () => {
                             <p
                                 className="
                                     mt-1
-                                    text-sm
+                                    text-xs
                                     text-[var(--on-surface-variant)]
+                                    sm:text-sm
                                 "
                             >
-                                {filteredApplications.length}
-                                {" "}
-                                {filteredApplications.length ===
-                                1
+                                {filteredApplications.length}{" "}
+                                {filteredApplications.length === 1
                                     ? "application"
-                                    : "applications"}
-                                {" "}
+                                    : "applications"}{" "}
                                 shown
                             </p>
 
                         </div>
 
+
+                        {/* ACTIVE FILTER INDICATOR */}
+
+                        {(search ||
+                            statusFilter !== "all") && (
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+
+                                        setSearch("");
+                                        setStatusFilter(
+                                            "all"
+                                        );
+
+                                    }}
+                                    className="
+                                    inline-flex
+                                    w-fit
+                                    items-center
+                                    gap-1.5
+                                    rounded-lg
+                                    px-2.5
+                                    py-1.5
+                                    text-xs
+                                    font-bold
+                                    text-[var(--primary)]
+                                    transition
+                                    hover:bg-[var(--primary-fixed)]
+                                "
+                                >
+
+                                    <X
+                                        size={13}
+                                    />
+
+                                    Clear filters
+
+                                </button>
+
+                            )}
+
                     </div>
 
 
-                    {applications.length ===
-                        0 ? (
+                    {/* =================================================
+                        EMPTY
+                    ================================================== */}
+
+                    {applications.length === 0 ? (
 
                         <ApplicationEmptyState
                             onCreate={() =>
@@ -994,17 +1137,13 @@ const Applications = () => {
                             }
                         />
 
-                    ) : filteredApplications.length ===
-                      0 ? (
+                    ) : filteredApplications.length === 0 ? (
 
                         <NoResults
-                            search={
-                                search
-                            }
+                            search={search}
                             onClear={() => {
 
                                 setSearch("");
-
                                 setStatusFilter(
                                     "all"
                                 );
@@ -1017,16 +1156,16 @@ const Applications = () => {
                         <div
                             className="
                                 grid
-                                gap-5
+                                grid-cols-1
+                                gap-4
+                                sm:gap-5
                                 md:grid-cols-2
-                                xl:grid-cols-3
+                                2xl:grid-cols-3
                             "
                         >
 
                             {filteredApplications.map(
-                                (
-                                    application
-                                ) => (
+                                (application) => (
 
                                     <ApplicationCard
                                         key={
@@ -1064,9 +1203,9 @@ const Applications = () => {
             </div>
 
 
-            {/* =================================
+            {/* =========================================================
                 CREATE MODAL
-            ================================= */}
+            ========================================================== */}
 
             <ApplicationModal
                 isOpen={
@@ -1089,9 +1228,9 @@ const Applications = () => {
             />
 
 
-            {/* =================================
+            {/* =========================================================
                 DETAILS MODAL
-            ================================= */}
+            ========================================================== */}
 
             <ApplicationDetailsModal
                 isOpen={
@@ -1123,9 +1262,9 @@ const Applications = () => {
             />
 
 
-            {/* =================================
+            {/* =========================================================
                 EDIT MODAL
-            ================================= */}
+            ========================================================== */}
 
             <ApplicationModal
                 isOpen={
@@ -1151,57 +1290,261 @@ const Applications = () => {
                 mode="edit"
             />
 
+
+            {/* =========================================================
+                DELETE CONFIRMATION
+            ========================================================== */}
+
             {applicationToDelete && (
+
                 <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+                    className="
+                        fixed
+                        inset-0
+                        z-[100]
+                        flex
+                        items-center
+                        justify-center
+                        bg-black/40
+                        p-3
+                        backdrop-blur-sm
+                        sm:p-5
+                    "
                     onMouseDown={(event) => {
-                        if (event.target === event.currentTarget && !isDeleting) {
-                            setApplicationToDelete(null);
+
+                        if (
+                            event.target ===
+                            event.currentTarget &&
+                            !isDeleting
+                        ) {
+
+                            setApplicationToDelete(
+                                null
+                            );
+
                         }
+
                     }}
                 >
-                    <div className="w-full max-w-md overflow-hidden rounded-[28px] border border-[var(--outline-variant)] bg-[var(--surface-container-lowest)] shadow-[var(--shadow-lg)]">
-                        <div className="flex items-start gap-4 border-b border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-6 py-6">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--error-container)] text-[var(--error)]">
-                                <CircleAlert size={21} />
+
+                    <div
+                        className="
+                            w-full
+                            max-w-md
+                            overflow-hidden
+                            rounded-2xl
+                            border
+                            border-[var(--outline-variant)]
+                            bg-[var(--surface-container-lowest)]
+                            shadow-[var(--shadow-lg)]
+                            sm:rounded-[28px]
+                        "
+                    >
+
+                        {/* HEADER */}
+
+                        <div
+                            className="
+                                flex
+                                items-start
+                                gap-3
+                                border-b
+                                border-[var(--outline-variant)]
+                                bg-[var(--surface-container-low)]
+                                px-4
+                                py-5
+                                sm:gap-4
+                                sm:px-6
+                                sm:py-6
+                            "
+                        >
+
+                            <div
+                                className="
+                                    flex
+                                    h-10
+                                    w-10
+                                    shrink-0
+                                    items-center
+                                    justify-center
+                                    rounded-xl
+                                    bg-[var(--error-container)]
+                                    text-[var(--error)]
+                                    sm:h-11
+                                    sm:w-11
+                                    sm:rounded-2xl
+                                "
+                            >
+
+                                <CircleAlert
+                                    size={20}
+                                />
+
                             </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-[var(--on-surface)]">
+
+
+                            <div
+                                className="
+                                    min-w-0
+                                "
+                            >
+
+                                <h2
+                                    className="
+                                        text-base
+                                        font-bold
+                                        text-[var(--on-surface)]
+                                        sm:text-lg
+                                    "
+                                >
                                     Delete application?
                                 </h2>
-                                <p className="mt-1 text-sm leading-6 text-[var(--on-surface-variant)]">
-                                    This action cannot be undone. The application will be permanently removed.
+
+                                <p
+                                    className="
+                                        mt-1
+                                        text-xs
+                                        leading-5
+                                        text-[var(--on-surface-variant)]
+                                        sm:text-sm
+                                        sm:leading-6
+                                    "
+                                >
+                                    This action cannot be
+                                    undone. The application
+                                    will be permanently removed.
                                 </p>
+
                             </div>
+
                         </div>
 
-                        <div className="px-6 py-5">
-                            <p className="rounded-xl bg-[var(--surface-container-low)] px-4 py-3 text-sm font-semibold text-[var(--on-surface)]">
-                                {workspaceMap.get(applicationToDelete.jobId)?.role ||
+
+                        {/* APPLICATION */}
+
+                        <div
+                            className="
+                                px-4
+                                py-4
+                                sm:px-6
+                                sm:py-5
+                            "
+                        >
+
+                            <p
+                                className="
+                                    overflow-hidden
+                                    text-ellipsis
+                                    whitespace-nowrap
+                                    rounded-xl
+                                    bg-[var(--surface-container-low)]
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    font-semibold
+                                    text-[var(--on-surface)]
+                                "
+                            >
+
+                                {workspaceMap.get(
+                                    applicationToDelete.jobId
+                                )?.role ||
                                     "Selected application"}
+
                             </p>
+
                         </div>
 
-                        <div className="flex flex-col-reverse gap-3 border-t border-[var(--outline-variant)] bg-[var(--surface-container-low)] px-6 py-5 sm:flex-row sm:justify-end">
+
+                        {/* ACTIONS */}
+
+                        <div
+                            className="
+                                flex
+                                flex-col-reverse
+                                gap-2
+                                border-t
+                                border-[var(--outline-variant)]
+                                bg-[var(--surface-container-low)]
+                                px-4
+                                py-4
+                                sm:flex-row
+                                sm:justify-end
+                                sm:gap-3
+                                sm:px-6
+                                sm:py-5
+                            "
+                        >
+
                             <button
                                 type="button"
-                                onClick={() => setApplicationToDelete(null)}
-                                disabled={isDeleting}
-                                className="rounded-xl px-5 py-2.5 text-sm font-semibold text-[var(--on-surface-variant)] transition hover:bg-[var(--surface-container-high)] disabled:opacity-50"
+                                onClick={() =>
+                                    setApplicationToDelete(
+                                        null
+                                    )
+                                }
+                                disabled={
+                                    isDeleting
+                                }
+                                className="
+                                    min-h-11
+                                    rounded-xl
+                                    px-5
+                                    py-2.5
+                                    text-sm
+                                    font-semibold
+                                    text-[var(--on-surface-variant)]
+                                    transition
+                                    hover:bg-[var(--surface-container-high)]
+                                    disabled:opacity-50
+                                    sm:min-h-0
+                                "
                             >
                                 Cancel
                             </button>
+
+
                             <button
                                 type="button"
-                                onClick={handleConfirmDelete}
-                                disabled={isDeleting}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                                onClick={
+                                    handleConfirmDelete
+                                }
+                                disabled={
+                                    isDeleting
+                                }
+                                className="
+                                    inline-flex
+                                    min-h-11
+                                    items-center
+                                    justify-center
+                                    gap-2
+                                    rounded-xl
+                                    bg-[var(--error)]
+                                    px-5
+                                    py-2.5
+                                    text-sm
+                                    font-bold
+                                    text-white
+                                    transition
+                                    hover:opacity-90
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-50
+                                    sm:min-h-0
+                                "
                             >
-                                {isDeleting ? "Deleting..." : "Delete application"}
+
+                                {isDeleting
+                                    ? "Deleting..."
+                                    : "Delete application"}
+
                             </button>
+
                         </div>
+
                     </div>
+
                 </div>
+
             )}
 
         </div>
@@ -1211,9 +1554,9 @@ const Applications = () => {
 };
 
 
-// =================================================
+// =============================================================
 // STAT CARD
-// =================================================
+// =============================================================
 
 const StatCard = ({
     label,
@@ -1225,11 +1568,17 @@ const StatCard = ({
 
         <div
             className="
+                min-w-0
                 rounded-2xl
                 border
                 border-[var(--outline-variant)]
                 bg-[var(--surface-container-lowest)]
-                p-5
+                p-4
+                shadow-sm
+                transition
+                hover:-translate-y-0.5
+                hover:shadow-md
+                sm:p-5
             "
         >
 
@@ -1238,25 +1587,28 @@ const StatCard = ({
                     flex
                     items-center
                     justify-between
-                    gap-4
+                    gap-3
                 "
             >
 
                 <div
                     className="
                         flex
-                        h-10
-                        w-10
+                        h-9
+                        w-9
+                        shrink-0
                         items-center
                         justify-center
                         rounded-xl
                         bg-[var(--primary-fixed)]
                         text-[var(--primary)]
+                        sm:h-10
+                        sm:w-10
                     "
                 >
 
                     <Icon
-                        size={19}
+                        size={18}
                     />
 
                 </div>
@@ -1264,9 +1616,12 @@ const StatCard = ({
 
                 <p
                     className="
-                        text-2xl
+                        min-w-0
+                        truncate
+                        text-xl
                         font-extrabold
                         text-[var(--on-surface)]
+                        sm:text-2xl
                     "
                 >
                     {value}
@@ -1277,10 +1632,13 @@ const StatCard = ({
 
             <p
                 className="
-                    mt-4
-                    text-sm
+                    mt-3
+                    truncate
+                    text-xs
                     font-bold
                     text-[var(--on-surface-variant)]
+                    sm:mt-4
+                    sm:text-sm
                 "
             >
                 {label}
@@ -1293,9 +1651,9 @@ const StatCard = ({
 };
 
 
-// =================================================
+// =============================================================
 // NO RESULTS
-// =================================================
+// =============================================================
 
 const NoResults = ({
     search,
@@ -1307,33 +1665,49 @@ const NoResults = ({
         <div
             className="
                 flex
-                min-h-[300px]
+                min-h-[280px]
                 flex-col
                 items-center
                 justify-center
-                rounded-[2rem]
+                rounded-[1.5rem]
                 border
                 border-[var(--outline-variant)]
                 bg-[var(--surface-container-low)]
-                px-6
+                px-5
                 text-center
+                sm:min-h-[320px]
+                sm:rounded-[2rem]
+                sm:px-6
             "
         >
 
-            <Search
-                size={28}
+            <div
                 className="
+                    flex
+                    h-12
+                    w-12
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-[var(--surface-container-high)]
                     text-[var(--on-surface-variant)]
                 "
-            />
+            >
+
+                <Search
+                    size={23}
+                />
+
+            </div>
 
 
             <h3
                 className="
                     mt-5
-                    text-lg
+                    text-base
                     font-extrabold
                     text-[var(--on-surface)]
+                    sm:text-lg
                 "
             >
                 No applications found
@@ -1343,20 +1717,23 @@ const NoResults = ({
             <p
                 className="
                     mt-2
-                    text-sm
+                    max-w-md
+                    text-xs
+                    leading-5
                     text-[var(--on-surface-variant)]
+                    sm:text-sm
+                    sm:leading-6
                 "
             >
-                Try changing your search or
-                application status filter.
+                {search
+                    ? `Nothing matched "${search}". Try a different search or change your application status filter.`
+                    : "Try changing your application status filter."}
             </p>
 
 
             <button
                 type="button"
-                onClick={
-                    onClear
-                }
+                onClick={onClear}
                 className="
                     mt-5
                     rounded-xl
@@ -1366,6 +1743,10 @@ const NoResults = ({
                     text-sm
                     font-bold
                     text-white
+                    shadow-sm
+                    transition
+                    hover:-translate-y-0.5
+                    hover:shadow-md
                 "
             >
                 Clear filters

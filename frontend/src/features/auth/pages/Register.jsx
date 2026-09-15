@@ -22,6 +22,7 @@ import useAuth from "../hooks/useAuth.js";
 import PasswordStrength from "../components/PasswordStrength.jsx";
 import { isPasswordValid } from "../utils/passwordValidation.js";
 import GoogleAuthButton from "../components/GoogleAuthButton.jsx";
+import SkillioLogo from "../../../components/SkillioLogo.jsx";
 
 
 const Register = () => {
@@ -1635,18 +1636,7 @@ const Register = () => {
                                     "
                                 >
 
-                                    <img
-                                        src={skillioLogo}
-                                        alt="Skillio"
-                                        className="
-                                            h-8
-                                            w-auto
-                                            max-w-[150px]
-                                            object-contain
-                                            sm:h-9
-                                        "
-                                        draggable="false"
-                                    />
+                                    <SkillioLogo size={150}/>
 
                                 </Link>
 
